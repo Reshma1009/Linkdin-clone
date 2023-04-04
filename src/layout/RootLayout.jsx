@@ -10,7 +10,7 @@ const RootLayout = () => {
       <Topbar/>
       <Outlet />
 
-      <h2>Footer</h2>
+      {/* <h2>Footer</h2> */}
     </div>
   )
 }
