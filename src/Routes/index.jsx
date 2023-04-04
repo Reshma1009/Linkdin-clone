@@ -24,16 +24,27 @@ export const router = createBrowserRouter(
 );
 /* export const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: <Login />,
   },
   {
     path: "/registation",
     element: <Registation />,
   },
+
   {
-    path: "/home",
-    element: <Home />,
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/profile",
+        element: <Profile />,
+      },
+      {
+        index: true,
+        element: <Home />,
+      },
+    ],
   },
   {
     path: "/forgotpassword",
