@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import InputBox from "./InputBox";
 import { ColorRing } from "react-loader-spinner";
-import { LoginAuthintacation } from "../api/Auth";
-import { auth } from "../firebase.config";
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
+import { useSelector, useDispatch } from "react-redux";
+import { userInformaton, getPass } from "../slices/userSlices";
+import ProfileEdit from "./ProfileEdit";
 const LoginComponents = () => {
+  const auth = getAuth();
+  let dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   let navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -22,26 +26,30 @@ const LoginComponents = () => {
     setEmail(e.target.value);
     setEmailError("");
   };
-  let handleSubmit = () => {
+  let handleSubmit = async () => {
     if (!email) {
       setEmailError("Email is requried");
     }
     if (!password) {
       setPasswordError("password is requried");
     }
+    dispatch( getPass( password ) );
+     localStorage.setItem("userPass", JSON.stringify(password));
     if (email && password) {
-      let res = LoginAuthintacation(email, password);
+
       setLoading(true);
-      res
+      await signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          console.log(userCredential.user);
+          let user = userCredential.user;
 
           toast.success("Login Successfull!");
+          dispatch(userInformaton(user));
 
+          localStorage.setItem("userInfo", JSON.stringify(user));
           setEmail("");
           setPassword("");
           setInterval(() => {
-            navigate("/home");
+            navigate("/");
           }, 2500);
           setLoading(false);
         })
@@ -53,6 +61,12 @@ const LoginComponents = () => {
           setLoading(false);
         });
     }
+  };
+  let goToSingUp = () => {
+    navigate("/registation");
+  };
+  let goToforgotPass = () => {
+    navigate("/forgotpassword");
   };
 
   return (
@@ -113,20 +127,20 @@ const LoginComponents = () => {
 
         <p className="text-center my-5">
           Don't Have Account ?{" "}
-          <Link
-            to="/registation"
+          <span
+            onClick={goToSingUp}
             className="text-primary font-bold font-nunito "
           >
             Sign Up
-          </Link>
+          </span>
         </p>
         <p className="text-center my-5">
-          <Link
-            to="/forgotpassword"
+          <span
+            onClick={goToforgotPass}
             className="text-primary font-bold font-nunito "
           >
             Forgot Password ?
-          </Link>
+          </span>
         </p>
       </div>
     </div>

@@ -9,20 +9,20 @@ import Login from "../pages/Login";
 import ForgetPassword from "../pages/ForgetPassword";
 import Home from "../pages/Home";
 import RootLayout from "../layout/RootLayout";
-export const router = createBrowserRouter(
+/* export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-      <Route path="/" element={<RootLayout />}>
-        <Route path="/profile" element={<Profile />} />
-        <Route index element={<Home />} />
-      </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/registation" element={<Registation />} />
       <Route path="/forgotpassword" element={<ForgetPassword />} />
+      <Route path="/" element={<RootLayout />}>
+        <Route index element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
     </Route>
   )
-);
-/* export const router = createBrowserRouter([
+); */
+ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
@@ -50,4 +50,4 @@ export const router = createBrowserRouter(
     path: "/forgotpassword",
     element: <ForgetPassword />,
   },
-]); */
+]);

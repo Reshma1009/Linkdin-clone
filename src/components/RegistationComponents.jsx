@@ -1,13 +1,23 @@
 import React, { useState } from "react";
 import InputBox from "./InputBox";
-import { RegistationAuthintacation } from "../api/Auth";
-import { auth } from "../firebase.config";
-import { onAuthStateChanged, updateProfile } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  sendEmailVerification,
+} from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { ColorRing } from "react-loader-spinner";
+import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
+import { useDispatch } from "react-redux";
+import { getDatabase, ref, set } from "firebase/database";
+import { userInformaton, getPass } from "../slices/userSlices";
 const RegistationComponents = () => {
+  const auth = getAuth();
+  const db = getDatabase();
   const [loading, setLoading] = useState(false);
+  let dispatch = useDispatch();
   let navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,7 +38,7 @@ const RegistationComponents = () => {
     setFullName(e.target.value);
     setFullNameError("");
   };
-  let handleSubmit = () => {
+  let handleSubmit = async () => {
     if (!fullName) {
       setFullNameError("Full Name is requried");
     }
@@ -39,15 +49,14 @@ const RegistationComponents = () => {
       setPasswordError("password is requried");
     }
     if (fullName && email && password) {
-      let res = RegistationAuthintacation(email, password);
       setLoading(true);
-      res
+      await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          console.log(userCredential.user);
+          let user = userCredential.user;
 
           updateProfile(auth.currentUser, {
             displayName: fullName,
-            // photoURL: "https://example.com/jane-q-user/profile.jpg",
+            photoURL: "https://example.com/jane-q-user/profile.jpg",
           })
             .then(() => {
               toast.success("Registation Successfull!");
@@ -55,14 +64,23 @@ const RegistationComponents = () => {
               setEmail("");
               setPassword("");
               sendEmailVerification(auth.currentUser);
+              dispatch(userInformaton(user));
+              localStorage.setItem("userInfo", JSON.stringify(user));
               setInterval(() => {
-                navigate("/");
+                navigate("/login");
               }, 2500);
               setLoading(false);
             })
+            .then(() => {
+              console.log("ami user");
+              set(ref(db, "users/" + user.uid), {
+                username: user.displayName,
+                email: user.email,
+                profile_picture: user.photoURL,
+              });
+            })
             .catch((error) => {
-              // An error occurred
-              // ...
+              console.log(error);
             });
         })
         .catch((error) => {
@@ -73,6 +91,9 @@ const RegistationComponents = () => {
           setLoading(false);
         });
     }
+  };
+  let goToSingIn = () => {
+    navigate("/login");
   };
 
   return (
@@ -143,9 +164,12 @@ const RegistationComponents = () => {
         )}
         <p className="text-center my-5">
           Already Have An Account ?{" "}
-          <Link to="/" className="text-primary font-bold font-nunito ">
+          <span
+            onClick={goToSingIn}
+            className="text-primary font-bold font-nunito "
+          >
             Sign In
-          </Link>
+          </span>
         </p>
       </div>
     </div>

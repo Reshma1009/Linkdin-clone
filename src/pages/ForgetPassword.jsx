@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import InputBox from "../components/InputBox";
 import { ColorRing } from "react-loader-spinner";
-import { ResetEmailAuthintacation } from "../api/Auth";
-import { auth } from "../firebase.config";
 import { onAuthStateChanged } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";

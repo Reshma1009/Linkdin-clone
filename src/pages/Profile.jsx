@@ -1,9 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
+import ProfileComponents from "../components/ProfileComponents";
 const Profile = () => {
-  return (
-    <div>Profile</div>
-  )
-}
+  let data = useSelector((state) => state.allUserInfo.userInfo);
+  // console.log(data);
+  const [showData, setshowData] = useState(data);
 
-export default Profile
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    if (!data) {
+      navigate("/login");
+    }
+  }, []);
+
+  return (
+    <>
+      {showData && (
+        <div>
+
+
+
+            <ProfileComponents  />
+
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Profile;
